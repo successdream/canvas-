@@ -16,7 +16,7 @@
       <div id="box" style="border: 1px solid red;position: absolute;width:0px; height: 0px; z-index:3000;left:0px;top:0px;">
       </div>
     </div>
-    <canvas style="display: none" id="canvas" width="300px" height="300px" ></canvas>
+    <canvas style="display: none;margin-top:50px;" id="canvas" width="300px" height="300px" ></canvas>
     <img id="canvasImg" src="" alt="">
     <script>
       function b(e){
@@ -71,7 +71,7 @@
           secondClick.pixel.x = num;
           firstClick.natural.x = secondClick.natural.x;
           secondClick.natural.y = naturalNum;
-          box.style.left = firstClick.pixel.x;
+          box.style.left = firstClick.pixel.x + 'px';
         }
         if(secondClick.pixel.x < firstClick.pixel.x) {
           const num =  JSON.parse(JSON.stringify(firstClick.pixel.y));
@@ -80,16 +80,17 @@
           firstClick.natural.y = secondClick.natural.y;
           secondClick.pixel.y = num;
           secondClick.natural.y = naturalNum;
-          box.style.top = firstClick.pixel.y;
+          box.style.top = firstClick.pixel.y + 'px';
         }
         container.removeEventListener('mousemove', b);
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.style.width = secondClick.natural.x - firstClick.natural.x;
-        canvas.style.width = secondClick.natural.y - firstClick.natural.y;
-          ctx.drawImage(img,firstClick.natural.x,firstClick.natural.y,secondClick.natural.x - firstClick.natural.x,secondClick.natural.y - firstClick.natural.y,0, 0, secondClick.natural.x - firstClick.natural.x, secondClick.natural.y - firstClick.natural.y);
+        canvas.style.width = (secondClick.natural.x - firstClick.natural.x)*scale.x + 'px';
+        canvas.style.height = (secondClick.natural.y - firstClick.natural.y)*scale.y + 'px';
+          ctx.drawImage(img,firstClick.natural.x,firstClick.natural.y,secondClick.natural.x - 
+          firstClick.natural.x,secondClick.natural.y - firstClick.natural.y,0, 0, 
+          (secondClick.natural.x - firstClick.natural.x)*scale.x, (secondClick.natural.y - firstClick.natural.y)*scale.y);
           const dataURL = canvas.toDataURL()
-          console.log(dataURL,'src地址');
           const canvasImg = document.getElementById('canvasImg');
           canvasImg.src = dataURL
        })
