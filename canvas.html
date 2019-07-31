@@ -1,51 +1,101 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="utf-8" />
-  <title>canvas学习</title>
-</head>
-<style>
-  #myCanvas {
-    border: 1px solid #ccc;
-    /* background-color: aqua; */
-  }
-</style>
-
-<body>
-  <canvas id="myCanvas" width="400" height="400">
-  </canvas>
-
-  <script>
-    const canvas = document.getElementById("myCanvas");
-    const ctx = canvas.getContext("2d");
-    const p = new Path2D();
-    p.rect(0, 0, 200, 200);
-    ctx.stroke(p)
-    for (let a = 0; a < 4; a++) {
-      if (a === 0) ctx.fillStyle = 'rgb(255, 0, 0)';
-      if (a === 1) ctx.fillStyle = 'green';
-      if (a === 2) ctx.fillStyle = 'yellow';
-      if (a === 3) ctx.fillStyle = 'blue';
-      for (let i = 0; i < 20; i++) {
-        if (a === 0) {
-          ctx.fillStyle = `rgba(255, 0, 0, ${1/20*i})`
-        }
-        if (a === 1) {
-          ctx.fillStyle = `rgba(0, 255, 0, ${1/20*i})`
-        }
-        if (a === 2) {
-          ctx.fillStyle = `rgba(0, 0, 255, ${1/20*i})`
-        }
-        if (a === 3) {
-          ctx.fillStyle = `rgba(255,105,180, ${1/20*i})`
-        }
-        const p = new Path2D();
-        p.rect(i * 10, a * 50, 10, 50);
-        ctx.fill(p);
-      }
+  <head>
+    <meta charset="UTF-8" />
+    <title>canvas</title>
+  </head>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
     }
-  </script>
-</body>
-
+  </style>
+  <body>
+    <div id="container" style="width: 500px; height: 500px;position: relative;">
+      <img id='img' style="width: 100%; height: 100%;" src="./3.jpg" alt="">
+      <div id="box" style="border: 1px solid red;position: absolute;width:0px; height: 0px; z-index:3000;left:0px;top:0px;">
+      </div>
+    </div>
+    <canvas style="display: none" id="canvas" width="300px" height="300px" ></canvas>
+    <img id="canvasImg" src="" alt="">
+    <script>
+      function b(e){
+         if(!firstClick.pixel.x) return;
+         let x = e.x;
+         let y =e.y;
+        if(x < firstClick.pixel.x){
+          const num = firstClick.pixel.x;
+          firstClick.pixel.x = x;
+          x = num;
+          box.style.left = x + 'px';
+        }
+        box.style.width = x - firstClick.pixel.x + 'px';
+        if(y < firstClick.pixel.y) {
+          const num = firstClick.pixel.y;
+          firstClick.pixel.y = y;
+          y = num;
+          box.style.top = y + 'px';
+        }
+        box.style.height = y - firstClick.pixel.y + 'px';
+       }
+       const box = document.getElementById('box');
+       let firstClick = {pixel:{x: 0, y: 0},natural: {x: 0, y: 0}};
+       let secondClick = {pixel:{x: 0, y: 0},natural: {x: 0, y: 0}};
+       const img = document.getElementById('img');
+       let scale = {x: 1, y: 1};
+       img.onload = () => {
+          scale.x = img.clientWidth/img.naturalWidth;
+          scale.y= img.clientHeight/ img.naturalHeight;
+       }
+       const container = document.getElementById('container');
+       container.addEventListener('click', function a(e)  {
+        const x = e.x;
+        const y = e.y;
+        if(!firstClick.pixel.x){
+          firstClick.pixel.x = x;
+          firstClick.pixel.y = y;
+          firstClick.natural.x = x/scale.x;
+          firstClick.natural.y = y/scale.y;
+          box.style.left = x + 'px';
+          box.style.top = y + 'px';
+          return;
+        }
+        secondClick.pixel.x = x;
+        secondClick.pixel.y = y;
+        secondClick.natural.x = x/scale.x;
+        secondClick.natural.y = y/scale.y;
+        if(secondClick.pixel.x < firstClick.pixel.x) {
+          const num =  JSON.parse(JSON.stringify(firstClick.pixel.x));
+          const naturalNum =  JSON.parse(JSON.stringify(firstClick.natural.x));
+          firstClick.pixel.x = secondClick.pixel.x;
+          secondClick.pixel.x = num;
+          firstClick.natural.x = secondClick.natural.x;
+          secondClick.natural.y = naturalNum;
+          box.style.left = firstClick.pixel.x;
+        }
+        if(secondClick.pixel.x < firstClick.pixel.x) {
+          const num =  JSON.parse(JSON.stringify(firstClick.pixel.y));
+          const naturalNum =  JSON.parse(JSON.stringify(firstClick.natural.y));
+          firstClick.pixel.y = secondClick.pixel.y;
+          firstClick.natural.y = secondClick.natural.y;
+          secondClick.pixel.y = num;
+          secondClick.natural.y = naturalNum;
+          box.style.top = firstClick.pixel.y;
+        }
+        container.removeEventListener('mousemove', b);
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.style.width = secondClick.natural.x - firstClick.natural.x;
+        canvas.style.width = secondClick.natural.y - firstClick.natural.y;
+          ctx.drawImage(img,firstClick.natural.x,firstClick.natural.y,secondClick.natural.x - firstClick.natural.x,secondClick.natural.y - firstClick.natural.y,0, 0, secondClick.natural.x - firstClick.natural.x, secondClick.natural.y - firstClick.natural.y);
+          const dataURL = canvas.toDataURL()
+          console.log(dataURL,'src地址');
+          const canvasImg = document.getElementById('canvasImg');
+          canvasImg.src = dataURL
+       })
+       container.addEventListener('mousemove',b)
+      //裁剪
+      //点击获取点击的zuo'ba
+    </script>
+  </body>
 </html>
